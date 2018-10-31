@@ -2,11 +2,18 @@ package edu.android.and40_location;
 
 import android.app.IntentService;
 import android.content.Intent;
+import android.location.Location;
+import android.support.annotation.NonNull;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
@@ -34,11 +41,36 @@ public class LocationComparisonService extends IntentService {
 
     @Override
     public void onCreate() {
+        locationClient = LocationServices.getFusedLocationProviderClient(this);
+        createLocationRequest();
+        locationCallback = (LocationCallback) new LocationCallback(){
+            @Override
+            public void onLocationResult(LocationResult locationResult) {
+                Location location = locationResult.getLastLocation();
+
+                double latitude = location.getLatitude();
+                double longitude = location.getLongitude();
+
+                LatLng latLng = new LatLng(latitude,longitude);
+            }
+        };
+        database = FirebaseDatabase.getInstance();
+        locationReference = database.getReference(TABLE_NAME);
+
+
         super.onCreate();
+    }
+
+    private void createLocationRequest() {
+        locationRequest = new LocationRequest();
+        locationRequest.setInterval(5000);
+        locationRequest.setFastestInterval(3000);
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+
         return super.onStartCommand(intent, flags, startId);
     }
 

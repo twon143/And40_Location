@@ -153,6 +153,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+
     private void getLastLocation() {
         Task<Location> task = locationClient.getLastLocation();
         task.addOnSuccessListener(this,
