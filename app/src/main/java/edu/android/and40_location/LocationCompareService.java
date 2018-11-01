@@ -1,10 +1,15 @@
 package edu.android.and40_location;
 
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.location.Location;
 import android.os.IBinder;
 import android.support.annotation.NonNull;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationManagerCompat;
 import android.util.Log;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -135,14 +140,17 @@ public class LocationCompareService extends Service {
                     if (personLatLng != null && animalLatLng != null) {
 
                         try {
-                            /*Log.i(TAG, "personLocation(" + personLatLng.latitude + ", " + personLatLng.longitude + ") animalLocation(" + animalLatLng.latitude + ", " + animalLatLng.longitude + ")");
-                            Log.i(TAG, "사람과 동물 사이의 거리: " + SphericalUtil.computeDistanceBetween(personLatLng, animalLatLng) + "m");*/
+                            Log.i(TAG, "personLocation(" + personLatLng.latitude + ", " + personLatLng.longitude + ") animalLocation(" + animalLatLng.latitude + ", " + animalLatLng.longitude + ")");
+                            Log.i(TAG, "사람과 동물 사이의 거리: " + SphericalUtil.computeDistanceBetween(personLatLng, animalLatLng) + "m");
 
-                            double radius = 15;
+                            double radius = 5;
                             double distance = SphericalUtil.computeDistanceBetween(personLatLng, animalLatLng);
                             if (distance > radius) {
                                 Log.i(TAG, "거리 초과");
                                 //TODO: 알림음, 알림진동과 단말기 상태표시줄에 알림을 띄우고, 그 알림을 터치했을 때 진행하는 프로젝트 어플리케이션을 실행하는 Notification builder 를 생성하고 실행
+
+                                //
+
                                 stopSelf();
                                 throw new InterruptedException();
                             }
@@ -151,6 +159,8 @@ public class LocationCompareService extends Service {
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                             Log.i(TAG, "Thread Interrupt 되어 스레드 종료함");
+
+
                             break;
                         }
                     } else {
@@ -178,8 +188,27 @@ public class LocationCompareService extends Service {
         super.onDestroy();
         locationClient.removeLocationUpdates(locationCallback);
         t.interrupt();
+
+        Intent intent = new Intent(LocationCompareService.this, MapsActivity.class);
+        PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        NotificationCompat.Builder builder =
+                new NotificationCompat.Builder(getApplicationContext())
+                        .setSmallIcon(R.drawable.common_google_signin_btn_icon_dark)
+                        .setContentTitle("Warning")
+                        .setContentText("동물이 실종됨")
+                        .setDefaults(Notification.DEFAULT_VIBRATE)
+                        .setAutoCancel(true)
+                        .setContentIntent(pendingIntent);
+
+        NotificationManagerCompat notificationManager =
+                NotificationManagerCompat.from(getApplicationContext());
+
+        notificationManager.notify(0, builder.build());
+
         Log.i(TAG, "Service onDestroy() 호출");
         Log.i(TAG, "Service 종료됨...");
+
 
     }
 
