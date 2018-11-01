@@ -143,8 +143,8 @@ public class LocationCompareService extends Service {
                             if (distance > radius) {
                                 Log.i(TAG, "거리 초과");
                                 //TODO: 알림음, 알림진동과 단말기 상태표시줄에 알림을 띄우고, 그 알림을 터치했을 때 진행하는 프로젝트 어플리케이션을 실행하는 Notification builder 를 생성하고 실행
-
                                 stopSelf();
+                                throw new InterruptedException();
                             }
 
                             Thread.sleep(3000);
