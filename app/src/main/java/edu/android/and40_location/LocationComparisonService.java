@@ -6,7 +6,6 @@ import android.content.Intent;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.maps.model.Marker;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
@@ -44,6 +43,7 @@ public class LocationComparisonService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
+
 
 
     }

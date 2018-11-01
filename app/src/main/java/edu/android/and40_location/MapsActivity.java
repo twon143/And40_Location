@@ -81,6 +81,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                 currentAnimalMarker = mMap.addMarker(markerOptions);
 
+
             }
 
             @Override
