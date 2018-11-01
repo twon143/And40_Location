@@ -17,6 +17,7 @@
         android:layout_weight="0.9"/>
 
     <Button
+        android:onClick="startLocationService"
         android:id="@+id/btnModeStart"
         android:layout_width="match_parent"
         android:layout_height="0dp"

@@ -1,6 +1,7 @@
 package edu.android.and40_location;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.AsyncTask;
@@ -8,6 +9,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -228,5 +230,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         // 주기적 위치 업데이트를 취소
         locationClient.removeLocationUpdates(locationCallback);
+    }
+
+    public void startLocationService(View view) {
+        Intent intent = new Intent(MapsActivity.this, LocationCompareService.class);
+        startService(intent);
     }
 }

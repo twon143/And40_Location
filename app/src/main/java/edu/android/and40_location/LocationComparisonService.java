@@ -23,7 +23,8 @@ public class LocationComparisonService extends IntentService {
     private static final int REQ_FINE_LOCATION = 100;
 
     public static final String TABLE_NAME = "location";
-
+    private Location animalLocation;
+    public static boolean isrunning = false;
     private FirebaseDatabase database;
     private DatabaseReference locationReference;
     private ValueEventListener valueEventListener;
@@ -46,17 +47,39 @@ public class LocationComparisonService extends IntentService {
         locationCallback = (LocationCallback) new LocationCallback(){
             @Override
             public void onLocationResult(LocationResult locationResult) {
-                Location location = locationResult.getLastLocation();
+                Location personLocation = locationResult.getLastLocation();
 
-                double latitude = location.getLatitude();
-                double longitude = location.getLongitude();
+                double latitude = personLocation.getLatitude();
+                double longitude = personLocation.getLongitude();
 
                 LatLng latLng = new LatLng(latitude,longitude);
+
+                if(animalLocation !=null){
+
+
+
+
+                }
             }
         };
         database = FirebaseDatabase.getInstance();
         locationReference = database.getReference(TABLE_NAME);
+        valueEventListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
+                LocationInfo info = dataSnapshot.getValue(LocationInfo.class);
+                LatLng latLng = new LatLng(info.getLatitude(), info.getLongitude());
+
+
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        };
 
         super.onCreate();
     }
@@ -70,7 +93,7 @@ public class LocationComparisonService extends IntentService {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-
+        isrunning = true;
         return super.onStartCommand(intent, flags, startId);
     }
 
@@ -78,6 +101,12 @@ public class LocationComparisonService extends IntentService {
     protected void onHandleIntent(Intent intent) {
 
 
+    }
+
+    @Override
+    public boolean stopService(Intent name) {
+        isrunning = false;
+        return super.stopService(name);
     }
 
     @Override
