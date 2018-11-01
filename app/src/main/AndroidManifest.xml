@@ -39,7 +39,7 @@
         </activity>
 
         <service
-            android:name=".LocationComparisonService"
+            android:name=".LocationCompareService"
             android:exported="false"></service>
     </application>
 

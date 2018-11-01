@@ -49,6 +49,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private Marker currentMarker = null;
     private Marker currentAnimalMarker = null;
 
+    private Intent intent = null;
+
     // 위치 정보(최근 위치, 주기적 업데이트 시작/취소)와 관련된 클래스
     private FusedLocationProviderClient locationClient;
     // 주기적 위치 업데이트를 요청할 때 설정 정보를 저장하는 클래스
@@ -181,7 +183,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private void createLocationRequest() {
         locationRequest = new LocationRequest();
         locationRequest.setInterval(5000);
-        locationRequest.setFastestInterval(1000);
+        locationRequest.setFastestInterval(2500);
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
         LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder();
@@ -233,7 +235,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     public void startLocationService(View view) {
-        Intent intent = new Intent(MapsActivity.this, LocationCompareService.class);
+        intent = new Intent(MapsActivity.this, LocationCompareService.class);
         startService(intent);
+    }
+
+    public void stopLocationService(View view) {
+        stopService(intent);
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        stopService(intent);
     }
 }

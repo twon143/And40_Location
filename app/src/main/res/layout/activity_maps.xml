@@ -16,13 +16,31 @@
         android:layout_height="0dp"
         android:layout_weight="0.9"/>
 
-    <Button
-        android:onClick="startLocationService"
-        android:id="@+id/btnModeStart"
+    <LinearLayout
+        android:id="@+id/container"
+        android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="0.1"
-        android:text="산책 모드"/>
+        android:layout_weight="0.1">
+
+        <Button
+            android:onClick="startLocationService"
+            android:id="@+id/btnModeStart"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.5"
+            android:text="산책 모드 on"/>
+
+        <Button
+            android:onClick="stopLocationService"
+            android:id="@+id/btnModeStop"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.5"
+            android:text="산책 모드 off"/>
+    </LinearLayout>
+
+
 
 </LinearLayout>
 
