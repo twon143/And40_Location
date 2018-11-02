@@ -1,11 +1,14 @@
 package edu.android.and40_location;
 
 import android.app.Notification;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
+import android.os.Build;
 import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationCompat;
@@ -185,15 +188,22 @@ public class LocationCompareService extends Service {
 
     @Override
     public void onDestroy() {
-        super.onDestroy();
         locationClient.removeLocationUpdates(locationCallback);
         t.interrupt();
+        NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        String channelId = "channel";
+        String channelName = "Channel Name";
+        int importance = NotificationManager.IMPORTANCE_HIGH;
 
+        if(Build.VERSION.SDK_INT>= Build.VERSION_CODES.O){
+            NotificationChannel channel = new NotificationChannel(channelId,channelName,importance);
+            notificationManager.createNotificationChannel(channel);
+        }
         Intent intent = new Intent(LocationCompareService.this, MapsActivity.class);
-        PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        Context context = LocationCompareService.this;
         NotificationCompat.Builder builder =
-                new NotificationCompat.Builder(getApplicationContext())
+                new NotificationCompat.Builder(context,channelId)
                         .setSmallIcon(R.drawable.common_google_signin_btn_icon_dark)
                         .setContentTitle("Warning")
                         .setContentText("동물이 실종됨")
@@ -201,15 +211,12 @@ public class LocationCompareService extends Service {
                         .setAutoCancel(true)
                         .setContentIntent(pendingIntent);
 
-        NotificationManagerCompat notificationManager =
-                NotificationManagerCompat.from(getApplicationContext());
 
         notificationManager.notify(0, builder.build());
 
         Log.i(TAG, "Service onDestroy() 호출");
         Log.i(TAG, "Service 종료됨...");
-
-
+        super.onDestroy();
     }
 
     @Override
