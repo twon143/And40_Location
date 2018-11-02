@@ -207,9 +207,10 @@ public class LocationCompareService extends Service {
                         .setSmallIcon(R.drawable.common_google_signin_btn_icon_dark)
                         .setContentTitle("Warning")
                         .setContentText("동물이 실종됨")
-                        .setDefaults(Notification.DEFAULT_VIBRATE)
+                        .setDefaults(Notification.DEFAULT_ALL)
                         .setAutoCancel(true)
-                        .setContentIntent(pendingIntent);
+                        .setContentIntent(pendingIntent)
+                        .setVibrate(new long[]{500,500,500,500});
 
 
         notificationManager.notify(0, builder.build());
