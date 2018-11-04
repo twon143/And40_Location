@@ -7,6 +7,7 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.os.Build;
 import android.os.IBinder;
@@ -20,6 +21,7 @@ import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -204,13 +206,16 @@ public class LocationCompareService extends Service {
         Context context = LocationCompareService.this;
         NotificationCompat.Builder builder =
                 new NotificationCompat.Builder(context,channelId)
-                        .setSmallIcon(R.drawable.common_google_signin_btn_icon_dark)
-                        .setContentTitle("Warning")
-                        .setContentText("동물이 실종됨")
+                        .setSmallIcon(R.drawable.notification_icon)
+                        .setContentTitle("동물과 거리가 멀어짐")
+                        .setContentText("알림을 클릭하여 반려동물의 위치를 확인하세요.")
                         .setDefaults(Notification.DEFAULT_ALL)
+                        .setPriority(NotificationCompat.PRIORITY_MAX)
                         .setAutoCancel(true)
+                        .setWhen(System.currentTimeMillis())
                         .setContentIntent(pendingIntent)
                         .setVibrate(new long[]{500,500,500,500});
+
 
 
         notificationManager.notify(0, builder.build());

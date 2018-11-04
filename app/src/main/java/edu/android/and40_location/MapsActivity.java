@@ -243,9 +243,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         stopService(intent);
     }
 
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        stopService(intent);
-    }
+//    @Override
+//    public void onBackPressed() {
+//        super.onBackPressed();
+//
+//        stopService(intent);
+//    }
 }
