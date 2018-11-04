@@ -3,15 +3,18 @@ package edu.android.and40_location;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import com.cs.googlemaproute.DrawRoute;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
@@ -26,6 +29,8 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
@@ -34,7 +39,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, DrawRoute.onDrawRoute {
 
     private static final String TAG = "edu.android.and39";
     private static final int REQ_FINE_LOCATION = 100;
@@ -48,6 +53,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private GoogleMap mMap;
     private Marker currentMarker = null;
     private Marker currentAnimalMarker = null;
+
 
     private Intent intent = null;
 
@@ -76,7 +82,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 LocationInfo info = dataSnapshot.getValue(LocationInfo.class);
                 LatLng latLng = new LatLng(info.getLatitude(), info.getLongitude());
 
-                if(currentAnimalMarker != null){
+                if (currentAnimalMarker != null) {
                     currentAnimalMarker.remove();
                 }
                 MarkerOptions markerOptions = new MarkerOptions();
@@ -217,13 +223,21 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         if (currentMarker != null) currentMarker.remove();
 
-
-        currentMarker =  mMap.addMarker(new MarkerOptions().position(latLng));
+        currentMarker = mMap.addMarker(new MarkerOptions().position(latLng));
         mMap.setMinZoomPreference(15);
         mMap.setMaxZoomPreference(20);
         mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
-    }
 
+//        if (currentMarker != null && currentAnimalMarker != null) {
+//
+//            DrawRoute.getInstance(this, MapsActivity.this)
+//                    .setFromLatLong(currentMarker.getPosition().latitude, currentMarker.getPosition().longitude)
+//                    .setToLatLong(currentAnimalMarker.getPosition().latitude, currentAnimalMarker.getPosition().longitude)
+//                    .setGmapAndKey("AIzaSyDY5a6wDy34nyL_bQswV-1q9dPpKGMMnHU", mMap).run();
+//        }
+
+
+    }
 
 
     @Override
@@ -241,6 +255,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     public void stopLocationService(View view) {
         stopService(intent);
+    }
+
+    @Override
+    public void afterDraw(String result) {
+        Log.d(TAG, result);
     }
 
 //    @Override

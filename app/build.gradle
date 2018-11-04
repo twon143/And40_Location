@@ -5,7 +5,7 @@ android {
     compileSdkVersion 28
     defaultConfig {
         applicationId "edu.android.and40_location"
-        minSdkVersion 21
+        minSdkVersion 19
         targetSdkVersion 28
         versionCode 1
         versionName "1.0"
@@ -36,4 +36,6 @@ dependencies {
     implementation 'com.google.firebase:firebase-database:16.0.4'
 
     implementation 'com.google.maps.android:android-maps-utils:0.5'
+
+    implementation 'com.cs:googlemaproute:1.0.0'
 }
