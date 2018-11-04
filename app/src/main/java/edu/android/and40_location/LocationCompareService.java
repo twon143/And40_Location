@@ -7,6 +7,7 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.os.Build;
@@ -201,8 +202,14 @@ public class LocationCompareService extends Service {
             NotificationChannel channel = new NotificationChannel(channelId,channelName,importance);
             notificationManager.createNotificationChannel(channel);
         }
+
+        Bitmap mLargeIconForNoti =
+                BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher_large);
+
         Intent intent = new Intent(LocationCompareService.this, MapsActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
         Context context = LocationCompareService.this;
         NotificationCompat.Builder builder =
                 new NotificationCompat.Builder(context,channelId)
@@ -210,6 +217,8 @@ public class LocationCompareService extends Service {
                         .setContentTitle("동물과 거리가 멀어짐")
                         .setContentText("알림을 클릭하여 반려동물의 위치를 확인하세요.")
                         .setDefaults(Notification.DEFAULT_ALL)
+                        .setLargeIcon(mLargeIconForNoti)
+//                        .setStyle(new NotificationCompat.BigPictureStyle().bigPicture(mLargeIconForNoti).bigLargeIcon(null))
                         .setPriority(NotificationCompat.PRIORITY_MAX)
                         .setAutoCancel(true)
                         .setWhen(System.currentTimeMillis())
