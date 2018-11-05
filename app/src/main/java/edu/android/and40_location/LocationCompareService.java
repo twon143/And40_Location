@@ -14,7 +14,6 @@ import android.os.Build;
 import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.NotificationManagerCompat;
 import android.util.Log;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -22,7 +21,6 @@ import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -153,9 +151,6 @@ public class LocationCompareService extends Service {
                             double distance = SphericalUtil.computeDistanceBetween(personLatLng, animalLatLng);
                             if (distance > radius) {
                                 Log.i(TAG, "거리 초과");
-                                //TODO: 알림음, 알림진동과 단말기 상태표시줄에 알림을 띄우고, 그 알림을 터치했을 때 진행하는 프로젝트 어플리케이션을 실행하는 Notification builder 를 생성하고 실행
-
-                                //
 
                                 stopSelf();
                                 throw new InterruptedException();
@@ -193,6 +188,9 @@ public class LocationCompareService extends Service {
     public void onDestroy() {
         locationClient.removeLocationUpdates(locationCallback);
         t.interrupt();
+
+        //TODO: 알림음, 알림진동과 단말기 상태표시줄에 알림을 띄우고, 그 알림을 터치했을 때 진행하는 프로젝트 어플리케이션을 실행하는 Notification builder 를 생성하고 실행
+
         NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         String channelId = "channel";
         String channelName = "Channel Name";
@@ -204,7 +202,7 @@ public class LocationCompareService extends Service {
         }
 
         Bitmap mLargeIconForNoti =
-                BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher_large);
+                BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher_large_);
 
         Intent intent = new Intent(LocationCompareService.this, MapsActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -213,7 +211,7 @@ public class LocationCompareService extends Service {
         Context context = LocationCompareService.this;
         NotificationCompat.Builder builder =
                 new NotificationCompat.Builder(context,channelId)
-                        .setSmallIcon(R.drawable.notification_icon)
+                        .setSmallIcon(R.drawable.notification_icon_)
                         .setContentTitle("동물과 거리가 멀어짐")
                         .setContentText("알림을 클릭하여 반려동물의 위치를 확인하세요.")
                         .setDefaults(Notification.DEFAULT_ALL)

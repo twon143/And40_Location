@@ -3,18 +3,14 @@ package edu.android.and40_location;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
 import android.location.Location;
-import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
-import com.cs.googlemaproute.DrawRoute;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
@@ -29,8 +25,6 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.Polyline;
-import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
@@ -39,7 +33,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, DrawRoute.onDrawRoute {
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
     private static final String TAG = "edu.android.and39";
     private static final int REQ_FINE_LOCATION = 100;
@@ -224,17 +218,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         if (currentMarker != null) currentMarker.remove();
 
         currentMarker = mMap.addMarker(new MarkerOptions().position(latLng));
+
+
         mMap.setMinZoomPreference(15);
         mMap.setMaxZoomPreference(20);
         mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
-
-//        if (currentMarker != null && currentAnimalMarker != null) {
-//
-//            DrawRoute.getInstance(this, MapsActivity.this)
-//                    .setFromLatLong(currentMarker.getPosition().latitude, currentMarker.getPosition().longitude)
-//                    .setToLatLong(currentAnimalMarker.getPosition().latitude, currentAnimalMarker.getPosition().longitude)
-//                    .setGmapAndKey("AIzaSyDY5a6wDy34nyL_bQswV-1q9dPpKGMMnHU", mMap).run();
-//        }
 
 
     }
@@ -257,10 +245,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         stopService(intent);
     }
 
-    @Override
-    public void afterDraw(String result) {
-        Log.d(TAG, result);
-    }
 
 //    @Override
 //    public void onBackPressed() {
@@ -268,4 +252,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 //
 //        stopService(intent);
 //    }
+
+    /*public String getDirectionURL(LatLng origin, LatLng dest) {
+        return "https://maps.googleapis.com/maps/api/directions/json?origin="
+                + String.valueOf(origin.latitude) + "," + String.valueOf()&destination=13.0,77.0&mode=walking&key=AIzaSyCB-00ZkTlkPyYFgaI_9N90M3KxYqU43jU"
+    }*/
 }
