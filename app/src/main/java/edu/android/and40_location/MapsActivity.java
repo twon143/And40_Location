@@ -3,11 +3,14 @@ package edu.android.and40_location;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Location;
+import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -25,6 +28,9 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.PolygonOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
@@ -32,6 +38,14 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.gson.Gson;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
@@ -48,6 +62,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private Marker currentMarker = null;
     private Marker currentAnimalMarker = null;
 
+    private Polyline polyline = null;
 
     private Intent intent = null;
 
@@ -219,6 +234,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         currentMarker = mMap.addMarker(new MarkerOptions().position(latLng));
 
+        if(currentMarker != null && currentAnimalMarker != null){
+            if(polyline != null){
+                polyline.remove();
+            }
+
+            String URL = getDirectionURL(currentMarker.getPosition(), currentAnimalMarker.getPosition());
+//            String URL = getDirectionURL(new LatLng(13.03, 77.6), new LatLng(13.0, 77.0));
+            GetDirectionTask directionTask = new GetDirectionTask();
+            directionTask.execute(URL);
+
+        }
 
         mMap.setMinZoomPreference(15);
         mMap.setMaxZoomPreference(20);
@@ -253,8 +279,67 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 //        stopService(intent);
 //    }
 
-    /*public String getDirectionURL(LatLng origin, LatLng dest) {
+//--------------------------- Google Direction API로 두 위치 사이의 경로를 표시하는 기능
+    //-------------------------- but, 한국에서 경로를 표시하려면 권한(사업자 등록)을 해야한다고 한다. 개인 프로젝트에서 불가능함..
+    public String getDirectionURL(LatLng origin, LatLng dest) {
         return "https://maps.googleapis.com/maps/api/directions/json?origin="
-                + String.valueOf(origin.latitude) + "," + String.valueOf()&destination=13.0,77.0&mode=walking&key=AIzaSyCB-00ZkTlkPyYFgaI_9N90M3KxYqU43jU"
-    }*/
+                + String.valueOf(origin.latitude) + "," + String.valueOf(origin.longitude)
+                + "&destination="
+                + String.valueOf(dest.latitude) + "," + String.valueOf(dest.longitude)
+                + "&mode=walking&key=AIzaSyCB-00ZkTlkPyYFgaI_9N90M3KxYqU43jU";
+    }
+
+    class GetDirectionTask extends AsyncTask<String, Void, List<List<LatLng>>> {
+
+        @Override
+        protected List<List<LatLng>> doInBackground(String... strings) {
+            Log.i(TAG, "GetDirectionTask doInBackground() 호출");
+            OkHttpClient client = new OkHttpClient();
+            Request request = new Request.Builder().url(strings[0]).build();
+            if(request != null){
+                Log.i(TAG, request.toString());
+            }
+            List<List<LatLng>> result = new ArrayList<>();
+            try {
+                Response response = client.newCall(request).execute();
+                String data = response.body().toString();
+
+                GoogleMapDTO respObj = new Gson().fromJson(data, GoogleMapDTO.class);
+
+                List<LatLng> path = new ArrayList<>();
+
+                for (Steps steps :
+                        respObj.getRoutes().get(0).getLegs().get(0).getSteps()) {
+
+                    Log.i(TAG, "시작 위치: " + steps.getStart_location().getLat() + "," + steps.getStart_location().getLng());
+                    Log.i(TAG, "마지막 위치: " + steps.getEnd_location().getLat() + "," + steps.getEnd_location().getLng());
+
+                    LatLng startLatLng = new LatLng(Double.parseDouble(steps.getStart_location().getLat()),
+                            Double.parseDouble(steps.getStart_location().getLng()));
+                    path.add(startLatLng);
+                    LatLng endLatLng = new LatLng(Double.parseDouble(steps.getEnd_location().getLat()),
+                            Double.parseDouble(steps.getEnd_location().getLng()));
+                    path.add(endLatLng);
+                }
+                result.add(path);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            return result;
+        }
+
+        @Override
+        protected void onPostExecute(List<List<LatLng>> lists) {
+//            super.onPostExecute(lists);
+            PolylineOptions lineOption = new PolylineOptions();
+            for (List<LatLng> list : lists) {
+                lineOption.addAll(list);
+                lineOption.width(10f);
+                lineOption.color(Color.BLUE);
+                lineOption.geodesic(true);
+            }
+            polyline = mMap.addPolyline(lineOption);
+        }
+    }
 }
